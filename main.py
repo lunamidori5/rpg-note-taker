@@ -36,6 +36,10 @@ def load_file():
     return f"{prompt_data}"
 
 def main():
+    notes = stt.stt()
+
+    texts = text_splitter.create_documents([notes])
+
     persona_folder = os.path.join(os.path.pardir)
     
     files = os.listdir(persona_folder); files.sort()
@@ -45,10 +49,6 @@ def main():
     notetaker = Character("Luna Midori", "Note Taker", load_file(), "Green")
 
     char_loop = [notetaker]
-
-    notes = stt.stt()
-
-    texts = text_splitter.create_documents([notes])
 
     for text in texts:
         for char in char_loop:
