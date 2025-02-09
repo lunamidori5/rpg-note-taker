@@ -29,14 +29,11 @@ class Character:
     def remember(self, message: str, name: Optional[str]):
         self.ai.remember(message, name)
 
-def load_file(filename):
-    with open(filename, "r") as f:
-        pre_data = f.read()
-    
+def load_file():
     with open("persona_prompt", "r") as f:
         prompt_data = f.read()
     
-    return f"{prompt_data}\n {pre_data}"
+    return f"{prompt_data}"
 
 def main():
     persona_folder = os.path.join(os.path.pardir)
@@ -45,21 +42,9 @@ def main():
 
     ## ['Notes', 'Notetaker', 'Persona Darkness', 'Persona Fire', 'Persona Fire and Ice', 'Persona Ice', 'Persona Light', 'Persona Light and Dark', 'Persona Lightning', 'Persona Storm', 'Persona Wind']
 
-    persona_light = Character("Luna Midori", "Persona Light", load_file(os.path.join(persona_folder, files[6])), "Green")
-    persona_darkness = Character("Luna Midori", "Persona Darkness", load_file(os.path.join(persona_folder, files[2])), "Green")
-    persona_lightanddark = Character("Luna Midori", "Persona Light and Dark", load_file(os.path.join(persona_folder, files[7])), "Green")
+    notetaker = Character("Luna Midori", "Note Taker", load_file(), "Green")
 
-    persona_fire = Character("Luna Midori", "Persona Fire", load_file(os.path.join(persona_folder, files[3])), "Green")
-    persona_ice = Character("Luna Midori", "Persona Ice", load_file(os.path.join(persona_folder, files[5])), "Green")
-    persona_fireandice = Character("Luna Midori", "Persona Fire and Ice", load_file(os.path.join(persona_folder, files[4])), "Green")
-
-    persona_wind = Character("Luna Midori", "Persona Wind", load_file(os.path.join(persona_folder, files[10])), "Green")
-    persona_storm = Character("Luna Midori", "Persona Storm", load_file(os.path.join(persona_folder, files[9])), "Green")
-    persona_lightning = Character("Luna Midori", "Persona Lightning", load_file(os.path.join(persona_folder, files[8])), "Green")
-
-    #luna = Character("Luna Midori", "6858 aka Luna Midori", "You are a woman with Green Hair and golden yellow eyes", "Green")
-
-    char_loop = [persona_light, persona_darkness, persona_lightanddark, persona_fire, persona_ice, persona_fireandice, persona_wind, persona_storm, persona_lightning]
+    char_loop = [notetaker]
 
     notes = stt.stt()
 

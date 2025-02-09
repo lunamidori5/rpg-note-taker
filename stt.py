@@ -8,7 +8,7 @@ def stt():
     output_text = f""
     text_list = []
 
-    folder_path = '/home/lunamidori/nfsshares/Videos'
+    folder_path = input("Video Folder to parse: ")
     files = os.listdir(folder_path)
 
     for file in files:
@@ -27,7 +27,7 @@ def stt():
             audio_clip.close()
             video_clip.close()
 
-            transcriber = pipeline("automatic-speech-recognition", model="openai/whisper-small", torch_dtype=torch.bfloat16, device_map="auto")
+            transcriber = pipeline("automatic-speech-recognition", model="openai/whisper-medium.en", torch_dtype=torch.bfloat16, device_map="auto")
             notes_text = transcriber(mp3_file)
 
             os.remove(mp3_file)
