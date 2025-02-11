@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import os
-import datetime
-
 import stt
+import datetime
 
 from elroy.api import Elroy
 
@@ -38,7 +37,9 @@ def load_file():
     return f"{prompt_data}"
 
 def main():
-    notes = stt.stt()
+    #notes = stt.stt()
+
+    notes = input("Input test: ")
 
     texts = text_splitter.create_documents([notes])
 

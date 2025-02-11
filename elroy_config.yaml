@@ -6,12 +6,12 @@ default_assistant_name: "Becca"  # Default name for the assistant
 
 # Model Selection Configuration
 openai_api_key: apikey # OpenAI API key, required for OpenAI (or OpenAI compatible) models
-openai_api_base: url  # OpenAI API (or OpenAI compatible) base URL
-openai_embedding_api_base: url  # OpenAI API (or OpenAI compatible) base URL for embeddings
+openai_api_base: http://localhost:8000/v1  # OpenAI API (or OpenAI compatible) base URL
+openai_embedding_api_base: http://localhost:8000/v1  # OpenAI API (or OpenAI compatible) base URL for embeddings
 openai_organization: null  # OpenAI (or OpenAI compatible) organization ID
 anthropic_api_key: null  # Anthropic API key, required for Anthropic models
-chat_model: "gpt-4o-mini"  # The model to use for chat completions
-embedding_model: "text-embedding-3-small"  # The model to use for text embeddings
+chat_model: "openai/*Q4_K_M.gguf"  # The model to use for chat completions
+embedding_model: "openai/*Q4_K_M.gguf"  # The model to use for text embeddings
 embedding_model_size: 1536  # The size of the embedding model
 enable_caching: true  # Whether to enable caching for the LLM, both for embeddings and completions
 #enable_tools: true  # Whether to enable tool calls for the assistant
