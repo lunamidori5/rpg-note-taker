@@ -17,6 +17,8 @@ text_splitter = RecursiveCharacterTextSplitter(
     length_function=len,
 )
 
+##
+
 class Character:
     def __init__(self, player_name: str, assistant_name: str, persona: str, text_color: str):
         self.text_color = text_color
