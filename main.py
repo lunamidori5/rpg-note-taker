@@ -75,7 +75,10 @@ class Character:
         self.ai = Elroy(token=f"{player_name}_{assistant_name}", config_path="elroy_config.yaml", persona=persona, assistant_name=assistant_name, database_url=f"sqlite:///{os.path.join(os.getcwd(), "databases", f"{assistant_name}.db")}")
 
     def message(self, input: str) -> str:
-        return self.ai.message(input)
+        spinner.start(text=f"LRM is thinking...")
+        text = self.ai.message(input)
+        spinner.succeed(text=f"LRM done thinking")
+        return text
 
 def load_file():
     with open("persona_prompt", "r") as f:
