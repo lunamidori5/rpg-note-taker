@@ -1,12 +1,19 @@
 from __future__ import annotations
 
 import os
+
 import stt
+import torch
+import docker
 import datetime
+
+from docker import DockerClient, types
+
+from halo import Halo
 
 from elroy.api import Elroy
 
-from typing import Optional
+from huggingface_downloader import download_file_from_midori_ai
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
@@ -16,7 +23,50 @@ text_splitter = RecursiveCharacterTextSplitter(
     length_function=len,
 )
 
-##
+client = docker.from_env()
+
+spinner = Halo(text='Loading', spinner='dots', color='green')
+
+if torch.cuda.is_available():
+    device = "cuda"
+else:
+    device = "cpu"
+
+def setup_lrm_server():
+    spinner.start(text=f"Building Llama CPP server")
+
+    client.images.build(path=os.getcwd(), rm=True, dockerfile="dockerfile", tag="llamacpp-server")
+
+    spinner.succeed(text=f"Llama CPP server Built")
+
+    download_file_from_midori_ai("DeepSeek-R1-Distill-Llama-8B-Q3_K_M.gguf", "unsloth", "DeepSeek-R1-Distill-Llama-8B-GGUF", "DeepSeek-R1-Distill-Llama-8B-Q3_K_M.gguf")
+    download_file_from_midori_ai("all-MiniLM-L6-v2-Q8_0.gguf", "second-state", "All-MiniLM-L6-v2-Embedding-GGUF", "all-MiniLM-L6-v2-Q8_0.gguf")
+
+    spinner.start(text=f"Starting Llama CPP server")
+
+    models_folder = os.path.join(os.getcwd(), "models")
+    
+    container_config = {
+        "name": "llama-cpp-server",
+        "image": "llamacpp-server",
+        "auto_remove": False,
+        "ports": {'8000/tcp': 8000},
+        "volumes": [f"{models_folder}:/models"],
+        "detach": True
+    }
+
+    if device == "cuda":
+        try:
+            gpu = types.DeviceRequest(capabilities=[['gpu']])
+            container_config["device_requests"] = [gpu]
+            client.containers.run(**container_config)
+        except Exception:
+            client.containers.run(**container_config)
+    else:
+        client.containers.run(**container_config)
+
+    spinner.succeed(text=f"Llama CPP server running")
+
 
 class Character:
     def __init__(self, player_name: str, assistant_name: str, persona: str, text_color: str):
@@ -27,9 +77,6 @@ class Character:
     def message(self, input: str) -> str:
         return self.ai.message(input)
 
-    def remember(self, message: str, name: Optional[str]):
-        self.ai.remember(message, name)
-
 def load_file():
     with open("persona_prompt", "r") as f:
         prompt_data = f.read()
@@ -37,7 +84,7 @@ def load_file():
     return f"{prompt_data}"
 
 def main():
-    #notes = stt.stt()
+    notes = stt.stt()
 
     notes = input("Input test: ")
 
@@ -46,8 +93,6 @@ def main():
     persona_folder = os.path.join(os.path.pardir)
     
     files = os.listdir(persona_folder); files.sort()
-
-    ## ['Notes', 'Notetaker', 'Persona Darkness', 'Persona Fire', 'Persona Fire and Ice', 'Persona Ice', 'Persona Light', 'Persona Light and Dark', 'Persona Lightning', 'Persona Storm', 'Persona Wind']
 
     notetaker = Character("Luna Midori", "Note Taker", load_file(), "Green")
 

@@ -1,21 +1,19 @@
 # Basic Configuration
 user_token: YOURTOKEN  # User token to use for Elroy
 #database_url: sqlite:///elroy.db  # Valid SQLite or Postgres URL for the database. If Postgres, the pgvector extension must be installed.
+inline_tool_calls: true  # Whether to enable inline tool calls in the assistant (better for some open source models)
 debug: false  # Whether to fail fast when errors occur, and emit more verbose logging
 default_assistant_name: "Becca"  # Default name for the assistant
 
 # Model Selection Configuration
-openai_api_key: apikey # OpenAI API key, required for OpenAI (or OpenAI compatible) models
-openai_api_base: http://localhost:8000/v1  # OpenAI API (or OpenAI compatible) base URL
-openai_embedding_api_base: http://localhost:8000/v1  # OpenAI API (or OpenAI compatible) base URL for embeddings
-openai_organization: null  # OpenAI (or OpenAI compatible) organization ID
-anthropic_api_key: null  # Anthropic API key, required for Anthropic models
-chat_model: "openai/*Q4_K_M.gguf"  # The model to use for chat completions
-embedding_model: "openai/*Q4_K_M.gguf"  # The model to use for text embeddings
+chat_model: "openai/gpt-4"  # The model to use for chat completions, if not provided, inferred from env variables
+chat_model_api_base: http://localhost:8000/v1  # Base URL for OpenAI compatible chat model API. Litellm will recognize vars too
+chat_model_api_key: apikey  # API key for OpenAI compatible chat model API
+embedding_model: "openai/text-embedding-3-small" # The model to use for text embeddings. If not provided, inferred from env variables
 embedding_model_size: 1536  # The size of the embedding model
+embedding_model_api_base: http://localhost:8000/v1  # Base URL for OpenAI compatible embedding model API
+embedding_model_api_key: apikey  # API key for OpenAI compatible embedding model API
 enable_caching: true  # Whether to enable caching for the LLM, both for embeddings and completions
-#enable_tools: true  # Whether to enable tool calls for the assistant
-#inline_tool_calls: true # Whether to prompt the assistant to include inlined function calls (better for some open source models)
 
 # Context Management
 max_assistant_loops: 4  # Maximum number of loops the assistant can run before tools are temporarily made unavailable
@@ -35,7 +33,7 @@ max_memory_cluster_size: 5  # The maximum number of memories that can be consoli
 min_memory_cluster_size: 3  # The minimum number of memories that can be consolidated into a single memory at once
 
 # UI Configuration
-show_internal_thought: true  # Show the assistant's internal thought monologue
+show_internal_thought: false  # Show the assistant's internal thought monologue
 system_message_color: "#9ACD32"  # Color for system messages
 user_input_color: "#FFE377"  # Color for user input
 assistant_color: "#77DFD8"  # Color for assistant output

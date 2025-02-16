@@ -1,38 +1,49 @@
 
 import os
 import torch
-from transformers import pipeline
+import datetime
+
+from transformers import pipeline 
 from moviepy import VideoFileClip
+
+def load_wisper():
+    return pipeline("automatic-speech-recognition", model="openai/whisper-medium.en", torch_dtype=torch.bfloat16, device_map="auto")
 
 def stt():
     output_text = f""
+    audio_files = []
     text_list = []
 
-    folder_path = input("Video Folder to parse: ")
-    files = os.listdir(folder_path)
+    video_folder_path = input("Video Folder to parse: ")
+    files = os.listdir(video_folder_path)
 
     for file in files:
-        if file.endswith('.mp4'):
-            video_path = os.path.join(folder_path, file)
+        video_path = os.path.join(video_folder_path, file)
 
-            mp4_file = video_path
-            mp3_file = "audio.mp3"
+        mp4_file = video_path
 
-            video_clip = VideoFileClip(mp4_file)
+        date_str = datetime.datetime.now().strftime("%Y-%m-%d%H-%M-%S")
+        mp3_file = os.path.join("audio_output", f"Notes_{date_str}_{len(text_list)}.mp3")
+
+        #video_clip = VideoFileClip(mp4_file)
+
+        with VideoFileClip(mp4_file) as video_clip:
 
             audio_clip = video_clip.audio
 
-            audio_clip.write_audiofile(mp3_file)
+            if audio_clip is not None:
+                audio_clip.write_audiofile(mp3_file)
+                audio_clip.close()
 
-            audio_clip.close()
-            video_clip.close()
+        audio_files.append(mp3_file)
 
-            transcriber = pipeline("automatic-speech-recognition", model="openai/whisper-medium.en", torch_dtype=torch.bfloat16, device_map="auto")
-            notes_text = transcriber(mp3_file)
-
-            os.remove(mp3_file)
-
-            text_list.append(notes_text["text"])
+    transcriber = load_wisper()
+    
+    for audio in audio_files:
+        notes_text = transcriber(audio)
+        text_list.append(notes_text["text"]) # type: ignore
+    
+    del transcriber
     
     for text in text_list:
         output_text += f" {text}"
