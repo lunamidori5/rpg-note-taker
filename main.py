@@ -108,8 +108,6 @@ def main():
 
     notes = stt.stt()
 
-    notes = input("Input test: ")
-
     texts = text_splitter.create_documents([notes])
 
     persona_folder = os.path.join(os.path.pardir)
