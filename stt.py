@@ -3,8 +3,12 @@ import os
 import torch
 import datetime
 
+from halo import Halo
+
 from transformers import pipeline 
 from moviepy import VideoFileClip
+
+spinner = Halo(text='Loading', spinner='dots', animation="bounce", color='red')
 
 def load_wisper():
     return pipeline("automatic-speech-recognition", model="openai/whisper-medium.en", torch_dtype=torch.bfloat16, device_map="auto")
@@ -25,8 +29,6 @@ def stt():
         date_str = datetime.datetime.now().strftime("%Y-%m-%d%H-%M-%S")
         mp3_file = os.path.join("audio_output", f"Notes_{date_str}_{len(text_list)}.mp3")
 
-        #video_clip = VideoFileClip(mp4_file)
-
         with VideoFileClip(mp4_file) as video_clip:
 
             audio_clip = video_clip.audio
@@ -40,8 +42,10 @@ def stt():
     transcriber = load_wisper()
     
     for audio in audio_files:
+        spinner.start(text=f"Transcribing the audio...")
         notes_text = transcriber(audio)
         text_list.append(notes_text["text"]) # type: ignore
+        spinner.succeed(text=f"Transcribing the audio...")
         os.remove(audio)
     
     del transcriber
