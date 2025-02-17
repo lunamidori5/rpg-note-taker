@@ -8,9 +8,11 @@ ARG USERNAME=midori-ai
 USER $USERNAME
 WORKDIR /home/$USERNAME
 
-COPY pyproject.toml pyproject.toml
 COPY llama_config.yaml llama_config.yaml
 
-RUN uv sync --python python3.12
+RUN yay -Syu --noconfirm python-llama-cpp && yay -Yccc --noconfirm
+
+RUN uv venv --python python3.12 --seed
+RUN uv pip install llama-cpp-python[server] --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu121
 
 CMD .venv/bin/python -m llama_cpp.server --config_file llama_config.yaml

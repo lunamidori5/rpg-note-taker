@@ -39,6 +39,8 @@ def setup_lrm_server():
 
     print("Starting server builder, this can take up to 2 hours on slower computers...")
 
+    device = "cpu"
+
     spinner.start(text=f"Building Llama CPP server")
 
     if device == "cuda":
