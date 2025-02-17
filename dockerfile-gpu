@@ -1,4 +1,4 @@
-FROM lunamidori5/pixelarch:topaz
+FROM lunamidori5/pixelarch:topaz_cuda
 
 RUN sudo sed -i 's/Topaz/NoteTaker/g' /etc/os-release
 
