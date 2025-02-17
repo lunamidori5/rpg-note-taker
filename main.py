@@ -153,13 +153,10 @@ def main():
 
     
     all_notes = []
-    for char_dir in os.listdir(notes_folder):
-        char_path = os.path.join(notes_folder, char_dir)
-        if os.path.isdir(char_path):
-            for note_file in os.listdir(char_path):
-                note_path = os.path.join(char_path, note_file)
-                with open(note_path, "r") as f:
-                    all_notes.append(f.read())
+    for note_file in os.listdir(notes_folder):
+        note_path = os.path.join(notes_folder, note_file)
+        with open(note_path, "r") as f:
+            all_notes.append(f.read())
 
     date_str = datetime.datetime.now().strftime("%Y-%m-%d")
     md_file = os.path.join(notes_folder, f"Notes_{date_str}.md")
