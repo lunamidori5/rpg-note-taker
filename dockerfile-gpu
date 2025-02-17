@@ -11,6 +11,8 @@ WORKDIR /home/$USERNAME
 COPY pyproject.toml pyproject.toml
 COPY llama_config.yaml llama_config.yaml
 
+RUN yay -Syu --noconfirm cuda && yay -Yccc --noconfirm
+
 RUN uv sync --python python3.12
 
 CMD .venv/bin/python -m llama_cpp.server --config_file llama_config.yaml

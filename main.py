@@ -37,9 +37,12 @@ def setup_lrm_server():
     download_file_from_midori_ai("DeepSeek-R1-Distill-Llama-8B-Q3_K_M.gguf", "unsloth", "DeepSeek-R1-Distill-Llama-8B-GGUF", "DeepSeek-R1-Distill-Llama-8B-Q3_K_M.gguf")
     download_file_from_midori_ai("all-MiniLM-L6-v2-Q8_0.gguf", "second-state", "All-MiniLM-L6-v2-Embedding-GGUF", "all-MiniLM-L6-v2-Q8_0.gguf")
 
+    print("Starting server builder, this can take up to 2 hours on slower computers...")
+
     spinner.start(text=f"Building Llama CPP server")
 
     if device == "cuda":
+        spinner.start(text=f"Building Llama CPP server - With GPU Support")
         client.images.build(path=os.getcwd(), rm=True, dockerfile="dockerfile-gpu", tag="llamacpp-server")
     else:
         client.images.build(path=os.getcwd(), rm=True, dockerfile="dockerfile", tag="llamacpp-server")
