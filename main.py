@@ -72,7 +72,6 @@ def setup_lrm_server():
 def shutdown_lrm_server(container):
     container.kill()
 
-
 class Character:
     def __init__(self, player_name: str, assistant_name: str, persona: str, text_color: str):
         self.text_color = text_color
@@ -92,6 +91,8 @@ def load_file():
     return f"{prompt_data}"
 
 def main():
+    containerd = setup_lrm_server()
+
     notes = stt.stt()
 
     notes = input("Input test: ")
@@ -143,6 +144,8 @@ def main():
         f.write(f"# Notes for {date_str}\n\n")
         for note in all_notes:
             f.write(f"---\n{note}\n")
+    
+    shutdown_lrm_server(containerd)
     
 
 if __name__ == "__main__":
