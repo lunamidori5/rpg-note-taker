@@ -39,7 +39,10 @@ def setup_lrm_server():
 
     spinner.start(text=f"Building Llama CPP server")
 
-    client.images.build(path=os.getcwd(), rm=True, dockerfile="dockerfile", tag="llamacpp-server")
+    if device == "cuda":
+        client.images.build(path=os.getcwd(), rm=True, dockerfile="dockerfile-gpu", tag="llamacpp-server")
+    else:
+        client.images.build(path=os.getcwd(), rm=True, dockerfile="dockerfile", tag="llamacpp-server")
 
     spinner.succeed(text=f"Llama CPP server Built")
 
