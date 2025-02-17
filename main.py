@@ -93,7 +93,19 @@ class Character:
 
     def message(self, input: str) -> str:
         spinner.start(text=f"LRM is thinking...")
-        text = self.ai.message(input)
+
+        while True:
+            try:
+                text = self.ai.message(input)
+        
+                if len(text) < 1:
+                    raise Exception("\nModel failed to reply")
+
+                break
+            except Exception as Error:
+                text = str(Error)
+                spinner.start(text=f"Retrying: LRM is thinking...")
+                
         spinner.succeed(text=f"LRM done thinking")
         return text
 
