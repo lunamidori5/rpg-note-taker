@@ -122,9 +122,9 @@ def main():
 
     texts = text_splitter.create_documents([notes])
 
-    persona_folder = os.path.join(os.path.pardir)
+    notes_folder = os.path.join("Notes")
     
-    files = os.listdir(persona_folder); files.sort()
+    files = os.listdir(notes_folder); files.sort()
 
     notetaker = Character("Luna Midori", "Note Taker", load_file(), "Green")
 
@@ -140,7 +140,7 @@ def main():
                     if len(output) < 1:
                         raise Exception("\nModel failed to reply")
 
-                    char_nots_file = os.path.join(os.path.pardir, "Notes", char.name, f"{datetime.datetime.now():%Y-%m-%d %H-%M-%S}.txt")
+                    char_nots_file = os.path.join(notes_folder, char.name, f"{datetime.datetime.now():%Y-%m-%d %H-%M-%S}.txt")
 
                     print(f"{char.name}: {output}")
 
@@ -151,7 +151,7 @@ def main():
             with open(char_nots_file, "w") as f:
                 f.write(output)
 
-    notes_folder = os.path.join(os.path.pardir, "Notes")
+    
     all_notes = []
     for char_dir in os.listdir(notes_folder):
         char_path = os.path.join(notes_folder, char_dir)
@@ -162,7 +162,7 @@ def main():
                     all_notes.append(f.read())
 
     date_str = datetime.datetime.now().strftime("%Y-%m-%d")
-    md_file = os.path.join(os.path.pardir, f"Notes_{date_str}.md")
+    md_file = os.path.join(notes_folder, f"Notes_{date_str}.md")
     with open(md_file, "w") as f:
         f.write(f"# Notes for {date_str}\n\n")
         for note in all_notes:
