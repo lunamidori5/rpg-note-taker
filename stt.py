@@ -42,6 +42,7 @@ def stt():
     for audio in audio_files:
         notes_text = transcriber(audio)
         text_list.append(notes_text["text"]) # type: ignore
+        os.remove(audio)
     
     del transcriber
     

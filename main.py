@@ -18,7 +18,7 @@ from huggingface_downloader import download_file_from_midori_ai
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=1096 * 2,
+    chunk_size=1096,
     chunk_overlap=0,
     length_function=len,
 )
@@ -41,6 +41,10 @@ def setup_lrm_server():
 
     device = "cpu"
 
+    if "llama-cpp-server" in client.containers.list(all=False):
+        container = client.containers.get("llama-cpp-server")
+        container.stop()
+
     spinner.start(text=f"Building Llama CPP server")
 
     if device == "cuda":
@@ -50,10 +54,6 @@ def setup_lrm_server():
         client.images.build(path=os.getcwd(), rm=True, dockerfile="dockerfile", tag="llamacpp-server")
 
     spinner.succeed(text=f"Llama CPP server Built")
-
-    if "llama-cpp-server" in client.containers.list(all=False):
-        container = client.containers.get("llama-cpp-server")
-        return container
     
     spinner.start(text=f"Starting Llama CPP server")
 
