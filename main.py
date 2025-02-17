@@ -59,13 +59,18 @@ def setup_lrm_server():
         try:
             gpu = types.DeviceRequest(capabilities=[['gpu']])
             container_config["device_requests"] = [gpu]
-            client.containers.run(**container_config)
+            container = client.containers.run(**container_config)
         except Exception:
-            client.containers.run(**container_config)
+            container = client.containers.run(**container_config)
     else:
-        client.containers.run(**container_config)
+        container = client.containers.run(**container_config)
 
     spinner.succeed(text=f"Llama CPP server running")
+
+    return container
+
+def shutdown_lrm_server(container):
+    container.kill()
 
 
 class Character:
