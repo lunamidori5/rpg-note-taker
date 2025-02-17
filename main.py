@@ -33,15 +33,20 @@ else:
     device = "cpu"
 
 def setup_lrm_server():
+
+    download_file_from_midori_ai("DeepSeek-R1-Distill-Llama-8B-Q3_K_M.gguf", "unsloth", "DeepSeek-R1-Distill-Llama-8B-GGUF", "DeepSeek-R1-Distill-Llama-8B-Q3_K_M.gguf")
+    download_file_from_midori_ai("all-MiniLM-L6-v2-Q8_0.gguf", "second-state", "All-MiniLM-L6-v2-Embedding-GGUF", "all-MiniLM-L6-v2-Q8_0.gguf")
+
     spinner.start(text=f"Building Llama CPP server")
 
     client.images.build(path=os.getcwd(), rm=True, dockerfile="dockerfile", tag="llamacpp-server")
 
     spinner.succeed(text=f"Llama CPP server Built")
 
-    download_file_from_midori_ai("DeepSeek-R1-Distill-Llama-8B-Q3_K_M.gguf", "unsloth", "DeepSeek-R1-Distill-Llama-8B-GGUF", "DeepSeek-R1-Distill-Llama-8B-Q3_K_M.gguf")
-    download_file_from_midori_ai("all-MiniLM-L6-v2-Q8_0.gguf", "second-state", "All-MiniLM-L6-v2-Embedding-GGUF", "all-MiniLM-L6-v2-Q8_0.gguf")
-
+    if "llama-cpp-server" in client.containers.list(all=False):
+        container = client.containers.get("llama-cpp-server")
+        return container
+    
     spinner.start(text=f"Starting Llama CPP server")
 
     models_folder = os.path.join(os.getcwd(), "models")
@@ -49,7 +54,7 @@ def setup_lrm_server():
     container_config = {
         "name": "llama-cpp-server",
         "image": "llamacpp-server",
-        "auto_remove": False,
+        "auto_remove": True,
         "ports": {'8000/tcp': 8000},
         "volumes": [f"{models_folder}:/models"],
         "detach": True
