@@ -41,9 +41,10 @@ def setup_lrm_server():
 
     device = "cpu"
 
-    if "llama-cpp-server" in client.containers.list(all=False):
-        container = client.containers.get("llama-cpp-server")
-        container.stop()
+    for container in client.containers.list(all=True):
+        if "llama-cpp-server" in str(container.name).lower():
+            container = client.containers.get("llama-cpp-server")
+            container.stop()
 
     spinner.start(text=f"Building Llama CPP server")
 
@@ -92,22 +93,38 @@ class Character:
         self.ai = Elroy(token=f"{player_name}_{assistant_name}", config_path="elroy_config.yaml", persona=persona, assistant_name=assistant_name, database_url=f"sqlite:///{os.path.join(os.getcwd(), "databases", f"{assistant_name}.db")}")
 
     def message(self, input: str) -> str:
-        spinner.start(text=f"LRM is thinking...")
+        spinner.start(text=f"{self.name} is thinking...")
+        max_retrys = 15
+        retrys = 0
 
-        while True:
+        while retrys < max_retrys:
             try:
                 text = self.ai.message(input)
-        
+
                 if len(text) < 1:
                     raise Exception("\nModel failed to reply")
+                
+                input_len = len(input)
+                output_len = len(text)
+                ratio = float(output_len) / float(input_len)
 
-                break
+                if ratio > 2.5:
+                    input += " Your output was way too long, and was rejected by the server, Could you be more concise?"
+                    raise Exception("\nModel response too verbose, retrying with more concise request.")
+                elif ratio < 0.8:
+                    input += " Your output was too short, and was rejected by the server, Could you elaborate more?"
+                    raise Exception("\nModel response too short, retrying with more elaborate request.")
+
+                spinner.succeed(text=f"{self.name} done thinking")
+                return text
+            
             except Exception as Error:
                 text = str(Error)
-                spinner.start(text=f"Retrying: LRM is thinking...")
-                
-        spinner.succeed(text=f"LRM done thinking")
-        return text
+                retrys += 1 
+                spinner.start(text=f"Retrying: {self.name} is thinking...")
+
+        spinner.fail(text=f"{self.name} failed to reply")
+        return "This model failed to reply to the request"
 
 def load_file():
     with open("persona_prompt", "r") as f:
