@@ -97,22 +97,30 @@ class Character:
         max_retrys = 15
         retrys = 0
 
+        feedback = ""
+        
+        max_ratio = 3.5
+        min_ratio = 0.2
+
         while retrys < max_retrys:
             try:
-                text = self.ai.message(input)
+                text = self.ai.message(input + feedback)
 
                 if len(text) < 1:
                     raise Exception("\nModel failed to reply")
                 
                 input_len = len(input)
                 output_len = len(text)
+
                 ratio = float(output_len) / float(input_len)
 
-                if ratio > 2.5:
-                    input += " Your output was way too long, and was rejected by the server, Could you be more concise?"
+                if ratio > max_ratio:
+                    feedback = " Your output was way too long, and was rejected by the server, Could you be more concise?"
+                    max_ratio += 0.1
                     raise Exception("\nModel response too verbose, retrying with more concise request.")
-                elif ratio < 0.8:
-                    input += " Your output was too short, and was rejected by the server, Could you elaborate more?"
+                elif ratio < min_ratio:
+                    feedback = " Your output was too short, and was rejected by the server, Could you elaborate more?"
+                    min_ratio -= 0.1
                     raise Exception("\nModel response too short, retrying with more elaborate request.")
 
                 spinner.succeed(text=f"{self.name} done thinking")
@@ -121,7 +129,7 @@ class Character:
             except Exception as Error:
                 text = str(Error)
                 retrys += 1 
-                spinner.start(text=f"Retrying: {self.name} is thinking...")
+                spinner.start(text=f"({str(Error)}) Retrying: {self.name} is thinking...")
 
         spinner.fail(text=f"{self.name} failed to reply")
         return "This model failed to reply to the request"
